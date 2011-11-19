@@ -11,8 +11,11 @@ then
 
 DESC:ami description
 DIST:debian
+ARCH:i386
 ROOTFS:ext4
-ROOTFS_SIZE:1024"
+ROOTFS_SIZE:1024
+REPO_URL:ftp.us.debian.org/debian
+REPO_PROTOCOL:ftp"
   exit 0
 fi
 
@@ -73,3 +76,41 @@ cat $AMIROOT/etc/fstab
 # mounting proc filesystem
 show_and_run "mkdir $AMIROOT/proc"
 show_and_run "sudo mount -t proc none $AMIROOT/proc"
+
+# bootstrap (aptitude install debootstrap)
+AMIARCH=`parse_cfg ARCH`
+AMI_REPO_URL=`parse_cfg REPO_URL`
+AMI_REPO_PROTOCOL=`parse_cfg REPO_PROTOCOL`
+show_and_run "sudo debootstrap --arch $AMIARCH --include=ssh squeeze $AMIROOT $AMI_REPO_PROTOCOL://$AMI_REPO_URL"
+
+# configuring timezone
+show_and_run "sudo chroot $AMIROOT dpkg-reconfigure tzdata"
+
+# configuring network
+echo "######################################################################" | sudo tee    $AMIROOT/etc/network/interfaces
+echo "# /etc/network/interfaces -- configuration file for ifup(8), ifdown(8)" | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "# See the interfaces(5) manpage for information on what options are"    | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "# available."                                                           | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "######################################################################" | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "# loopback interface"                                                   | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "auto lo"                                                                | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "iface lo inet loopback"                                                 | sudo tee -a $AMIROOT/etc/network/interfaces
+echo ""                                                                       | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "#"                                                                      | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "auto eth0"                                                              | sudo tee -a $AMIROOT/etc/network/interfaces
+echo "iface eth0 inet dhcp"                                                   | sudo tee -a $AMIROOT/etc/network/interfaces
+
+echo "new-ami" > $AMIROOT/etc/hostname
+
+# cpnfiguring apt
+echo "deb-src http://ftp.us.debian.org/debian squeeze main"     | sudo tee    $AMIROOT/etc/apt/sources.list
+echo ""                                                         | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo "deb http://security.debian.org/ squeeze/updates main"     | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo "deb-src http://security.debian.org/ squeeze/updates main" | sudo tee -a $AMIROOT/etc/apt/sources.list
+
+# cleaning install
+show_and_run "sudo chroot $AMIROOT aptitude clean"
+
+# umount filesystem
+sudo umount $AMIROOT/proc
+sudo umount $AMIROOT

@@ -12,10 +12,11 @@ then
 DESC:ami description
 DIST:debian
 ARCH:i386
-ROOTFS:ext4
+ROOTFS:ext3
 ROOTFS_SIZE:1024
 REPO_URL:ftp.us.debian.org/debian
-REPO_PROTOCOL:ftp"
+REPO_PROTOCOL:ftp
+LOCATION:TODO"
   exit 0
 fi
 
@@ -81,10 +82,7 @@ show_and_run "sudo mount -t proc none $AMIROOT/proc"
 AMIARCH=`parse_cfg ARCH`
 AMI_REPO_URL=`parse_cfg REPO_URL`
 AMI_REPO_PROTOCOL=`parse_cfg REPO_PROTOCOL`
-show_and_run "sudo debootstrap --arch $AMIARCH --include=ssh squeeze $AMIROOT $AMI_REPO_PROTOCOL://$AMI_REPO_URL"
-
-# configuring timezone
-show_and_run "sudo chroot $AMIROOT dpkg-reconfigure tzdata"
+show_and_run "sudo debootstrap --arch $AMIARCH --include=ssh,curl,linux-image-xen-686 squeeze $AMIROOT $AMI_REPO_PROTOCOL://$AMI_REPO_URL"
 
 # configuring network
 echo "######################################################################" | sudo tee    $AMIROOT/etc/network/interfaces
@@ -110,6 +108,16 @@ echo "deb-src http://security.debian.org/ squeeze/updates main" | sudo tee -a $A
 
 # cleaning install
 show_and_run "sudo chroot $AMIROOT aptitude clean"
+
+# bootloader
+sudo mkdir $AMIROOT/boot/grub
+echo "default 0                                             " | sudo tee $AMIROOT/boot/grub/menu.lst
+echo "timeout 1                                             " | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo "                                                      " | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo "title test                                            " | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo "	root (hd0)                                          " | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo "	kernel /boot/vmlinuz-2.6.32-5-xen-686 root=/dev/xvda1" | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo "	initrd /boot/initrd.img-2.6.32-5-xen-686            " | sudo tee -a $AMIROOT/boot/grub/menu.lst
 
 # umount filesystem
 sudo umount $AMIROOT/proc

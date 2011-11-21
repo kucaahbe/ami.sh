@@ -33,7 +33,7 @@ function parse_cfg {
 # create ami image
 AMINAME=`echo $AMIFILE | awk -F.ami '{ print $1 }'` # without .ami extension
 ROOTFS_SIZE=`parse_cfg ROOTFS_SIZE`
-AMIROOTFS=$AMINAME.fs
+AMIROOTFS=$AMINAME.image
 
 [[ -f $AMIROOTFS ]] && show_and_run "rm -f $AMIROOTFS"
 show_and_run "dd if=/dev/zero of=$AMIROOTFS bs=1M count=$ROOTFS_SIZE"
@@ -100,7 +100,7 @@ echo "#"                                                                      | 
 echo "auto eth0"                                                              | sudo tee -a $AMIROOT/etc/network/interfaces
 echo "iface eth0 inet dhcp"                                                   | sudo tee -a $AMIROOT/etc/network/interfaces
 
-echo "new-ami" > $AMIROOT/etc/hostname
+echo "new-ami" | sudo tee $AMIROOT/etc/hostname
 
 # cpnfiguring apt
 echo "deb-src http://ftp.us.debian.org/debian squeeze main"     | sudo tee    $AMIROOT/etc/apt/sources.list

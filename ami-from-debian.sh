@@ -2,6 +2,7 @@
 
 AMIFILE=$1
 SELFNAME=`basename $0`
+SELFDIR=/home/kuca/hxcoding/ami.sh
 
 if [[ ! -f $AMIFILE ]]
 then
@@ -124,8 +125,14 @@ echo "	initrd /boot/initrd.img-2.6.32-5-xen-686            " | sudo tee -a $AMIR
 #show_and_run "sudo chroot $AMIROOT dpkg-reconfigure tzdata"
 
 # ec2 setup
-show_and_run "cp ec2-get-credentials $AMIROOT/etc/init.d/"
-show_and_run "cp ec2-ssh-host-key-gen $AMIROOT/etc/init.d/"
+show_and_run "sudo cp $SELFDIR/ec2-get-credentials  $AMIROOT/etc/init.d/"
+show_and_run "sudo cp $SELFDIR/ec2-ssh-host-key-gen $AMIROOT/etc/init.d/"
+show_and_run "sudo chown root:root $AMIROOT/etc/init.d/ec2-get-credentials"
+show_and_run "sudo chown root:root $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
+show_and_run "sudo chmod u+rwx $AMIROOT/etc/init.d/ec2-get-credentials"
+show_and_run "sudo chmod u+rwx $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
+show_and_run "sudo chmod go+rx-w $AMIROOT/etc/init.d/ec2-get-credentials"
+show_and_run "sudo chmod go+rx-w $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
 show_and_run "sudo chroot $AMIROOT update-rc.d ec2-get-credentials  defaults"
 show_and_run "sudo chroot $AMIROOT update-rc.d ec2-ssh-host-key-gen defaults"
 

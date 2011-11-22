@@ -71,7 +71,8 @@ echo "#"                                                                        
 echo "# <file system> <mount point>   <type>  <options>       <dump>  <pass>"    >> $AMIROOT/etc/fstab
 echo "proc            /proc           proc    defaults        0       0"         >> $AMIROOT/etc/fstab
 echo "# root filesystem"                                                         >> $AMIROOT/etc/fstab
-echo "/dev/sda1       /               $ROOTFS_TYPE    defaults        1       1" >> $AMIROOT/etc/fstab
+echo "LABEL=uec-rootfs       /               $ROOTFS_TYPE    defaults        1       1" >> $AMIROOT/etc/fstab
+#     TODO /\/\/\/\/\/\
 cat $AMIROOT/etc/fstab
 
 # mounting proc filesystem
@@ -118,6 +119,15 @@ echo "title test                                            " | sudo tee -a $AMI
 echo "	root (hd0)                                          " | sudo tee -a $AMIROOT/boot/grub/menu.lst
 echo "	kernel /boot/vmlinuz-2.6.32-5-xen-686 root=/dev/xvda1" | sudo tee -a $AMIROOT/boot/grub/menu.lst
 echo "	initrd /boot/initrd.img-2.6.32-5-xen-686            " | sudo tee -a $AMIROOT/boot/grub/menu.lst
+
+# configuring timezone
+#show_and_run "sudo chroot $AMIROOT dpkg-reconfigure tzdata"
+
+# ec2 setup
+show_and_run "cp ec2-get-credentials $AMIROOT/etc/init.d/"
+show_and_run "cp ec2-ssh-host-key-gen $AMIROOT/etc/init.d/"
+show_and_run "sudo chroot $AMIROOT update-rc.d ec2-get-credentials  defaults"
+show_and_run "sudo chroot $AMIROOT update-rc.d ec2-ssh-host-key-gen defaults"
 
 # umount filesystem
 sudo umount $AMIROOT/proc

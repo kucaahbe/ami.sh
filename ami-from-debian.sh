@@ -71,8 +71,7 @@ echo "#"                                                                        
 echo "# <file system> <mount point>   <type>  <options>       <dump>  <pass>"    >> $AMIROOT/etc/fstab
 echo "proc            /proc           proc    defaults        0       0"         >> $AMIROOT/etc/fstab
 echo "# root filesystem"                                                         >> $AMIROOT/etc/fstab
-echo "LABEL=uec-rootfs       /               $ROOTFS_TYPE    defaults        1       1" >> $AMIROOT/etc/fstab
-#     TODO /\/\/\/\/\/\
+echo "rootfs          /               $ROOTFS_TYPE    defaults        1       1" >> $AMIROOT/etc/fstab
 cat $AMIROOT/etc/fstab
 
 # mounting proc filesystem

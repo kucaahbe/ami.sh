@@ -117,26 +117,23 @@ show_and_run "sudo chroot $AMIROOT aptitude clean"
 
 # bootloader
 sudo mkdir $AMIROOT/boot/grub
-echo "default 0                                             " | sudo tee $AMIROOT/boot/grub/menu.lst
-echo "timeout 1                                             " | sudo tee -a $AMIROOT/boot/grub/menu.lst
-echo "                                                      " | sudo tee -a $AMIROOT/boot/grub/menu.lst
-echo "title test                                            " | sudo tee -a $AMIROOT/boot/grub/menu.lst
-echo "	root (hd0)                                          " | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo "default 0"                                               | sudo tee $AMIROOT/boot/grub/menu.lst
+echo "timeout 1"                                               | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo ""                                                        | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo "title default-kernel"                                    | sudo tee -a $AMIROOT/boot/grub/menu.lst
+echo "	root (hd0)"                                            | sudo tee -a $AMIROOT/boot/grub/menu.lst
 echo "	kernel /boot/vmlinuz-2.6.32-5-xen-686 root=/dev/xvda1" | sudo tee -a $AMIROOT/boot/grub/menu.lst
-echo "	initrd /boot/initrd.img-2.6.32-5-xen-686            " | sudo tee -a $AMIROOT/boot/grub/menu.lst
-
-# configuring timezone
-#show_and_run "sudo chroot $AMIROOT dpkg-reconfigure tzdata"
+echo "	initrd /boot/initrd.img-2.6.32-5-xen-686"              | sudo tee -a $AMIROOT/boot/grub/menu.lst
 
 # ec2 setup
 show_and_run "sudo cp $SELFDIR/ec2-get-credentials  $AMIROOT/etc/init.d/"
 show_and_run "sudo cp $SELFDIR/ec2-ssh-host-key-gen $AMIROOT/etc/init.d/"
 show_and_run "sudo chown root:root $AMIROOT/etc/init.d/ec2-get-credentials"
 show_and_run "sudo chown root:root $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
-show_and_run "sudo chmod u+rwx $AMIROOT/etc/init.d/ec2-get-credentials"
-show_and_run "sudo chmod u+rwx $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
-show_and_run "sudo chmod go+rx-w $AMIROOT/etc/init.d/ec2-get-credentials"
-show_and_run "sudo chmod go+rx-w $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
+show_and_run "sudo chmod u+rwx     $AMIROOT/etc/init.d/ec2-get-credentials"
+show_and_run "sudo chmod u+rwx     $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
+show_and_run "sudo chmod go+rx-w   $AMIROOT/etc/init.d/ec2-get-credentials"
+show_and_run "sudo chmod go+rx-w   $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
 show_and_run "sudo chroot $AMIROOT update-rc.d ec2-get-credentials  defaults"
 show_and_run "sudo chroot $AMIROOT update-rc.d ec2-ssh-host-key-gen defaults"
 

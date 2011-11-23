@@ -133,6 +133,10 @@ show_and_run "sudo chmod go+rx-w   $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
 show_and_run "sudo chroot $AMIROOT update-rc.d ec2-get-credentials  defaults"
 show_and_run "sudo chroot $AMIROOT update-rc.d ec2-ssh-host-key-gen defaults"
 
+# remove useless scripts
+show_and_run "sudo chroot $AMIROOT update-rc.d -f hwclock.sh      remove"
+show_and_run "sudo chroot $AMIROOT update-rc.d -f hwclockfirst.sh remove"
+
 # cleaning install
 show_and_run "sudo chroot $AMIROOT aptitude clean"
 

@@ -111,10 +111,6 @@ echo "# squeeze-updates, previously known as 'volatile'"             | sudo tee 
 echo "deb http://ftp.ua.debian.org/debian/ squeeze-updates main"     | sudo tee -a $AMIROOT/etc/apt/sources.list
 echo "deb-src http://ftp.ua.debian.org/debian/ squeeze-updates main" | sudo tee -a $AMIROOT/etc/apt/sources.list
 
-
-# cleaning install
-show_and_run "sudo chroot $AMIROOT aptitude clean"
-
 # bootloader
 sudo mkdir $AMIROOT/boot/grub
 echo "default 0"                                               | sudo tee $AMIROOT/boot/grub/menu.lst
@@ -136,6 +132,9 @@ show_and_run "sudo chmod go+rx-w   $AMIROOT/etc/init.d/ec2-get-credentials"
 show_and_run "sudo chmod go+rx-w   $AMIROOT/etc/init.d/ec2-ssh-host-key-gen"
 show_and_run "sudo chroot $AMIROOT update-rc.d ec2-get-credentials  defaults"
 show_and_run "sudo chroot $AMIROOT update-rc.d ec2-ssh-host-key-gen defaults"
+
+# cleaning install
+show_and_run "sudo chroot $AMIROOT aptitude clean"
 
 # umount filesystem
 sudo umount $AMIROOT/proc

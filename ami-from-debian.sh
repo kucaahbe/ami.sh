@@ -16,8 +16,7 @@ ARCH:i386
 ROOTFS:ext3
 ROOTFS_SIZE:1024
 REPO_URL:ftp.us.debian.org/debian
-REPO_PROTOCOL:ftp
-LOCATION:TODO"
+REPO_PROTOCOL:ftp"
   exit 0
 fi
 
@@ -103,10 +102,16 @@ echo "iface eth0 inet dhcp"                                                   | 
 echo "new-ami" | sudo tee $AMIROOT/etc/hostname
 
 # cpnfiguring apt
-echo "deb-src http://ftp.us.debian.org/debian squeeze main"     | sudo tee    $AMIROOT/etc/apt/sources.list
-echo ""                                                         | sudo tee -a $AMIROOT/etc/apt/sources.list
-echo "deb http://security.debian.org/ squeeze/updates main"     | sudo tee -a $AMIROOT/etc/apt/sources.list
-echo "deb-src http://security.debian.org/ squeeze/updates main" | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo "deb http://ftp.us.debian.org/debian squeeze main"              | sudo tee    $AMIROOT/etc/apt/sources.list
+echo "deb-src http://ftp.us.debian.org/debian squeeze main"          | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo ""                                                              | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo "deb http://security.debian.org/ squeeze/updates main"          | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo "deb-src http://security.debian.org/ squeeze/updates main"      | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo ""                                                              | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo "# squeeze-updates, previously known as 'volatile'"             | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo "deb http://ftp.ua.debian.org/debian/ squeeze-updates main"     | sudo tee -a $AMIROOT/etc/apt/sources.list
+echo "deb-src http://ftp.ua.debian.org/debian/ squeeze-updates main" | sudo tee -a $AMIROOT/etc/apt/sources.list
+
 
 # cleaning install
 show_and_run "sudo chroot $AMIROOT aptitude clean"
